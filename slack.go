@@ -11,6 +11,15 @@ import (
 
 const APIBaseURL = "https://slack.com/api"
 
+// ActionDefault default style
+const ActionDefault = "default"
+
+// ActionPrimary primary style
+const ActionPrimary = "primary"
+
+// ActionDanger danger style
+const ActionDanger = "danger"
+
 // SlackTeam is a slack registered team
 type SlackTeam struct {
 	TeamID      string `json:"id"`
@@ -19,13 +28,25 @@ type SlackTeam struct {
 	EmailDomain string `json:"email_domain"`
 }
 
+// Action buttons for attachments
+type Action struct {
+	Name    string `json:"name"`
+	Text    string `json:"text"`
+	Style   string `json:"style,omitempty"`
+	Type    string `json:"type,omitempty"`
+	Value   string `json:"value,omitempty"`
+	Confirm string `json:"confirm,omitempty"`
+}
+
 // Attachment is meant for extra text or image in slack response
 type Attachment struct {
-	Title    string `json:"title"`
-	Text     string `json:"text"`
-	Fallback string `json:"fallback"`
-	ImageURL string `json:"image_url"`
-	Color    string `json:"color"`
+	Title      string   `json:"title,omitempty"`
+	Text       string   `json:"text"`
+	Fallback   string   `json:"fallback"`
+	ImageURL   string   `json:"image_url,omitempty"`
+	Color      string   `json:"color,omitempty"`
+	CallbackID string   `json:"callback_id,omitempty"`
+	Actions    []Action `json:"actions,omitempty"`
 }
 
 // ResponseMessage is slack response for the actions
@@ -54,4 +75,12 @@ func GetTeamInfo(client *http.Client, token *oauth2.Token) (*SlackTeamResponse, 
 	}
 
 	return &teamResponse, nil
+}
+
+// TextOnly creates new response message with text only
+func TextOnly(text string) ResponseMessage {
+	return ResponseMessage{
+		Text:        text,
+		Attachments: []Attachment{},
+	}
 }
